@@ -1,0 +1,95 @@
+**********************************************
+--Creating Table Register 
+
+CREATE TABLE Register (
+    ID int NOT NULL Identity(1, 1),
+    Name varchar(255),
+    Email varchar(255),
+    Gender varchar(255),
+    Skills varchar(255),
+	DOB datetime2,
+    CreatedDate datetime2,
+    UpdatedDate datetime2
+);
+
+
+**************************
+--Creating SP_GetRegisters 
+
+Use [SmartApp_Test]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[GetRegisters]
+	@ID INT 
+AS
+BEGIN
+	IF(@ID > 0)
+	BEGIN
+		Select * from Register where Id = @ID
+	END
+	ELSE
+	BEGIN
+		select * from Register
+	END
+END
+
+*****************
+--Creating SP_SaveOrUpdateRegisters
+
+Use [SmartApp_Test]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[SaveOrUpdateRegisters]
+	@ID int =0
+	,@Name varchar(255) =''
+    ,@Email varchar(255) =''
+    ,@Gender varchar(255) =''
+    ,@Skills varchar(255) =''
+	,@DOB datetime2 =''
+    ,@CreatedDate datetime2 =''
+AS
+BEGIN
+	BEGIN TRAN
+	IF(@ID = 0)
+	BEGIN
+		Insert Into Register (Name,Email,Gender,Skills,DOB,CreatedDate,UpdatedDate)
+		Values (@Name,@Email,@Gender,@Skills,@DOB,@CreatedDate,GETDATE()) SET @ID=(SELECT SCOPE_IDENTITY())
+	END
+	ELSE
+	BEGIN
+		UPDATE Register SET Name=@Name,Email=@Email,Gender=@Gender,Skills=@Skills,DOB=@DOB,CreatedDate=@CreatedDate,UpdatedDate=GETDATE() where ID=@Id
+	END
+	SELECT * from Register where ID =@ID
+	COMMIT TRAN
+END
+
+
+**********************************
+--Creating SP_DeleteRegister
+
+
+Use [SmartApp_Test]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[DeleteRegister]
+	@ID int 
+AS
+BEGIN
+	BEGIN TRAN
+		DELETE FROM Register WHERE ID=@ID
+	COMMIT TRAN
+END
+
+**************************************
